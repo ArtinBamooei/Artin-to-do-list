@@ -26,7 +26,7 @@ const pf=new Intl.DateTimeFormat('fa-IR-u-ca-persian',{year:'numeric',month:'lon
 let plans=[],selected=today(),anchor=from(today()),chosenIcon=icons[0],priority='medium',editing=null,timer;
 function parts(d){let o={};partsFmt.formatToParts(d).forEach(p=>{if(p.type!=='literal')o[p.type]=Number(p.value)});return o}
 function startMonth(d){let x=new Date(d);for(let i=0;i<32;i++){let prev=add(x,-1),a=parts(x),b=parts(prev);if(a.month!==b.month||a.year!==b.year)return x;x=prev}return x}
-function shift(d,n){return startMonth(add(d,n*20))}
+function shift(d,n){return startMonth(add(d,n<0?-1:32))}
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function notify(s){$('toast').textContent=s;$('toast').classList.add('show');clearTimeout(timer);timer=setTimeout(()=>$('toast').classList.remove('show'),1800)}
 function save(){localStorage.setItem(STORE,JSON.stringify(plans))}
