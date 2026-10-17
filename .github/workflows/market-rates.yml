@@ -1,6 +1,10 @@
 name: Refresh TGJU market prices
 
 on:
+  push:
+    paths:
+      - ".github/workflows/market-rates.yml"
+      - "scripts/update_market_rates.py"
   schedule:
     - cron: "*/5 * * * *"
   workflow_dispatch:
