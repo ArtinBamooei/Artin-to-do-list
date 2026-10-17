@@ -1,0 +1,30 @@
+/* Free-market currency aggregator. All displayed rates are in toman. */
+(()=>{'use strict';
+const MAX_AGE=60*60*1000;
+const CURRENCIES=[
+ {key:'usd',id:'priceUsd',timeId:'timeUsd',label:'دلار',priceDb:'usd',nerkh:['dollar','usd','USD']},
+ {key:'eur',id:'priceEur',timeId:'timeEur',label:'یورو',priceDb:'eur',nerkh:['euro','eur','EUR']},
+ {key:'gbp',id:'priceGbp',timeId:'timeGbp',label:'پوند',priceDb:'gbp',nerkh:['pound','gbp','GBP']}
+];
+const fmt=n=>new Intl.NumberFormat('fa-IR',{maximumFractionDigits:0}).format(Math.round(n));
+const timeFmt=d=>new Intl.DateTimeFormat('fa-IR',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit',timeZone:'Asia/Tehran'}).format(d);
+const getEl=id=>document.getElementById(id);
+function show(id,value){const el=getEl(id);if(el)el.textContent=value==null?'—':fmt(value)}
+function showTime(id,text,stale=false){const el=getEl(id);if(!el)return;el.textContent=text;el.dataset.stale=String(stale)}
+function jalaliOrdinal(y,m,d){return y*365+Math.floor(y/33)*8+Math.floor((y%33+3)/4)+(m<=6?(m-1)*31:186+(m-7)*30)+(d-1)}
+function jalaliNow(){const f=new Intl.DateTimeFormat('en-US-u-ca-persian-nu-latn',{timeZone:'Asia/Tehran',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23'});const p=Object.fromEntries(f.formatToParts(new Date()).map(x=>[x.type,x.value]));return {y:+p.year,m:+p.month,d:+p.day,minute:+p.hour*60+(+p.minute)}}
+function parseNerkhAge(data){const date=String(data.date||data.data?.date||''),time=String(data.time||data.data?.time||'');const dm=date.match(/(\d{4})\D(\d{1,2})\D(\d{1,2})/),tm=time.match(/(\d{1,2}):(\d{2})/);if(!dm||!tm)return null;const src={y:+dm[1],m:+dm[2],d:+dm[3],minute:+tm[1]*60+(+tm[2])},now=jalaliNow(),days=jalaliOrdinal(now.y,now.m,now.d)-jalaliOrdinal(src.y,src.m,src.d);return days*1440+now.minute-src.minute}
+function parseTime(value){if(value==null)return null;if(typeof value==='number')return new Date(value<1e12?value*1000:value);if(typeof value==='string'){const d=new Date(value);return Number.isNaN(d.getTime())?null:d}return null}
+async function getJson(url){const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),9000);try{const r=await fetch(url,{cache:'no-store',signal:controller.signal});if(!r.ok)throw new Error('HTTP '+r.status);return await r.json()}finally{clearTimeout(timer)}}
+function pickTimestamp(obj){if(!obj||typeof obj!=='object')return null;const keys=['updated_at','last_updated_at','lastUpdatedAt','timestamp','updated','fetched_at','published_at','date_updated'];for(const k of keys){if(obj[k]!=null){const d=parseTime(obj[k]);if(d)return d}}for(const v of Object.values(obj)){if(v&&typeof v==='object'){const d=pickTimestamp(v);if(d)return d}}return null}
+function pickPrice(obj){if(!obj||typeof obj!=='object')return null;for(const k of ['price','current','value','rate','last']){const v=obj[k];if(v!=null&&Number.isFinite(Number(v))&&Number(v)>0)return Number(v)}for(const v of Object.values(obj)){if(v&&typeof v==='object'){const n=pickPrice(v);if(n!=null)return n}}return null}
+function toToman(value){return value>=1000000?value/10:value}
+async function fetchPriceDb(currency,healthPromise){const [raw,health]=await Promise.all([getJson('https://api.priceto.day/v1/latest/irr/'+currency+'?source=average'),healthPromise.catch(()=>null)]);const price=pickPrice(raw),timestamp=pickTimestamp(raw)||pickTimestamp(health);if(price==null||!timestamp)throw new Error('PriceDB data missing');const age=Date.now()-timestamp.getTime();if(age<0||age>MAX_AGE)throw new Error('PriceDB stale');return {price:toToman(price),timestamp,source:'PriceDB'}}
+async function fetchNerkh(){const j=await getJson('https://nerkh.jahankhahan.shop/data/live.json');const root=j.data||j,rates=root.rates||root.prices;if(!rates)throw new Error('Nerkh schema missing');const age=parseNerkhAge(root);if(age==null||age<0||age>60)throw new Error('Nerkh stale');return CURRENCIES.map(c=>{let v=null;for(const k of c.nerkh){if(rates[k]!=null){v=typeof rates[k]==='object'?(rates[k].current??rates[k].price??rates[k].value):rates[k];break}}const n=Number(v);return {key:c.key,price:Number.isFinite(n)&&n>0?toToman(n):null,age,source:'Nerkh',stamp:String(root.date||'')+' '+String(root.time||'')}})}
+function renderRate(currency,candidates){const usable=candidates.filter(x=>x&&Number.isFinite(x.price)&&x.price>0&&x.age<=MAX_AGE);if(!usable.length){show(currency.id,null);showTime(currency.timeId,'نرخ معتبر زیر ۱ ساعت پیدا نشد',true);return {valid:false,conflict:false,count:0}}
+ usable.sort((a,b)=>a.age-b.age);let value=usable[0].price,conflict=false;
+ if(usable.length>=2){const [a,b]=usable;const delta=Math.abs(a.price-b.price)/((a.price+b.price)/2);if(delta<=0.05)value=(a.price+b.price)/2;else{conflict=true;value=a.price}}
+ show(currency.id,value);const names=usable.map(x=>x.source).join(' + '),suffix=usable.length===2&&!conflict?' · میانگین دو منبع':conflict?' · اختلاف منابع؛ منبع تازه‌تر':' · یک منبع معتبر';showTime(currency.timeId,'به‌روزرسانی: '+timeFmt(new Date(Date.now()-usable[0].age))+suffix+(usable.length===2?'':' · '+names),false);return {valid:true,conflict,count:usable.length}}
+async function fetchMarketCurrencies(){const healthPromise=getJson('https://api.priceto.day/v1/health');const nerkhPromise=fetchNerkh().catch(()=>[]);const dbPromise=Promise.all(CURRENCIES.map(c=>fetchPriceDb(c.priceDb,healthPromise).then(x=>({...x,key:c.key})).catch(()=>null)));const [n,db]=await Promise.all([nerkhPromise,dbPromise]);let valid=0,conflicts=0;for(const c of CURRENCIES){const a=n.find(x=>x.key===c.key);if(a&&a.price==null){}const b=db.find(x=>x&&x.key===c.key);const candidates=[];if(a&&a.price!=null)candidates.push({...a,age:a.age*60000});if(b)candidates.push({...b,age:Date.now()-b.timestamp.getTime()});const result=renderRate(c,candidates);if(result.valid)valid++;if(result.conflict)conflicts++}return {valid,conflicts,errors:3-valid}}
+window.fetchMarketCurrencies=fetchMarketCurrencies;
+})();
