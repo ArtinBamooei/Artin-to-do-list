@@ -48,6 +48,6 @@ async function fetchMarketCurrencies(){
  }
 }
 window.fetchMarketCurrencies=fetchMarketCurrencies;
-// Re-read the latest published snapshot every 60 seconds. GitHub Actions runs the scraper every 5 minutes (GitHub's minimum scheduled interval); polling faster only helps the page notice a newly published snapshot sooner.
-setInterval(fetchMarketCurrencies,60*1000);
+// Re-read the latest published snapshot every 30 seconds. This does not run the scraper; GitHub Actions still publishes snapshots on its scheduled interval.
+setInterval(fetchMarketCurrencies,30*1000);
 })();
