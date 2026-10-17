@@ -17,7 +17,7 @@ self.addEventListener('fetch', event => {
     }).catch(async () => (await caches.match(request)) || Response.error()));
     return;
   }
-  if (new URL(request.url).pathname.endsWith('/market-prices.json')) {
+  if (new URL(request.url).pathname.endsWith('/data/market-rates.json')) {
     event.respondWith(fetch(request, { cache: 'no-store' }).then(response => {
       if (response && response.ok) caches.open(CACHE_NAME).then(cache => cache.put(request, response.clone()));
       return response;
