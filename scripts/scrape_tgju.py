@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import json
 import re
-import time
 from datetime import datetime, timezone
 from html.parser import HTMLParser
 from pathlib import Path
@@ -52,7 +51,7 @@ class TextExtractor(HTMLParser):
 def parse_price(page: str, item: dict) -> tuple[float, str | None]:
     parser = TextExtractor()
     parser.feed(page)
-    text = latin_digits(" ".join(parser.parts))
+    text = latin_digits("".join(parser.parts))
     # Prefer the explicit current-rate field, not historical/previous-day rows.
     matches = list(re.finditer(r"نرخ\s*فعلی\s*:?\s*([0-9][0-9,٬،.]*)(?:\s*[-−—])?", text))
     if not matches:
