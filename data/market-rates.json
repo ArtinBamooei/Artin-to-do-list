@@ -1,14 +1,15 @@
 {
   "source": "TGJU",
-  "checkedAt": "2026-10-17T16:21:33Z",
+  "checkedAt": "2026-10-17T16:25:46Z",
   "scheduleMinutes": 5,
   "successfulItems": [
-    "usd",
-    "eur",
-    "gold",
     "oil"
   ],
-  "failedItems": {},
+  "failedItems": {
+    "usd": "Price changed by more than 45%; refusing suspicious update",
+    "gold": "Gold price outside sanity bounds: 2620710000.18",
+    "eur": "Price changed by more than 45%; refusing suspicious update"
+  },
   "items": {
     "usd": {
       "price": 2638050.0,
@@ -16,7 +17,9 @@
       "sourceDate": "19:09:14",
       "source": "TGJU",
       "sourceUrl": "https://www.tgju.org/profile/price_dollar_rl",
-      "unit": "IRR"
+      "unit": "IRR",
+      "stale": true,
+      "lastError": "Price changed by more than 45%; refusing suspicious update"
     },
     "gold": {
       "price": 262071000.0,
@@ -24,7 +27,9 @@
       "sourceDate": "19:09:42",
       "source": "TGJU",
       "sourceUrl": "https://www.tgju.org/profile/geram18",
-      "unit": "IRR"
+      "unit": "IRR",
+      "stale": true,
+      "lastError": "Gold price outside sanity bounds: 2620710000.18"
     },
     "eur": {
       "price": 2965100.0,
@@ -32,15 +37,20 @@
       "sourceDate": "19:10:42",
       "source": "TGJU",
       "sourceUrl": "https://www.tgju.org/profile/price_eur",
-      "unit": "IRR"
+      "unit": "IRR",
+      "stale": true,
+      "lastError": "Price changed by more than 45%; refusing suspicious update"
     },
     "oil": {
+      "label": "نفت برنت",
       "price": 109.86,
-      "fetchedAt": "2026-10-17T16:21:33Z",
-      "sourceDate": "04:51:30",
+      "unit": "دلار / بشکه",
       "source": "TGJU",
       "sourceUrl": "https://www.tgju.org/profile/energy-brent-oil",
-      "unit": "USD/barrel"
+      "sourceDate": "04:51:30",
+      "fetchedAt": "2026-10-17T16:25:46Z",
+      "stale": false
     }
-  }
+  },
+  "lastAttemptAt": "2026-10-17T16:25:46Z"
 }
