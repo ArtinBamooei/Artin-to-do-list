@@ -51,9 +51,8 @@ def scrape(item, config):
         value = number(clean_text(cells[1]))
         if "زمان ثبت آخرین نرخ" in label and source_date is None:
             source_date = clean_text(cells[1])
-        if "نرخ فعلی" in label and value is not None:
+        if "نرخ فعلی" in label and value is not None and price is None:
             price = value
-            break
 
     # Fallback for markup changes: parse the visible "نرخ فعلی" line.
     if price is None:
