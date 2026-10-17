@@ -1,0 +1,49 @@
+{
+  "source": "TGJU",
+  "updatedAt": null,
+  "lastAttemptAt": null,
+  "successCount": 0,
+  "errors": {},
+  "items": {
+    "usd": {
+      "label": "دلار آزاد",
+      "price": null,
+      "unit": "تومان",
+      "source": "TGJU",
+      "sourceUrl": "https://www.tgju.org/profile/price_dollar_rl",
+      "sourceTime": null,
+      "fetchedAt": null,
+      "stale": true
+    },
+    "gold": {
+      "label": "طلای ۱۸ عیار",
+      "price": null,
+      "unit": "تومان / گرم",
+      "source": "TGJU",
+      "sourceUrl": "https://www.tgju.org/profile/geram18",
+      "sourceTime": null,
+      "fetchedAt": null,
+      "stale": true
+    },
+    "eur": {
+      "label": "یورو",
+      "price": null,
+      "unit": "تومان",
+      "source": "TGJU",
+      "sourceUrl": "https://www.tgju.org/profile/price_eur",
+      "sourceTime": null,
+      "fetchedAt": null,
+      "stale": true
+    },
+    "oil": {
+      "label": "نفت برنت",
+      "price": null,
+      "unit": "دلار / بشکه",
+      "source": "TGJU",
+      "sourceUrl": "https://www.tgju.org/profile/energy-brent-oil",
+      "sourceTime": null,
+      "fetchedAt": null,
+      "stale": true
+    }
+  }
+}
