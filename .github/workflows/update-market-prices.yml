@@ -1,3 +1,4 @@
+# Scheduled scraper: GitHub Actions publishes a new snapshot when the job succeeds.
 name: Update market prices
 
 on:
