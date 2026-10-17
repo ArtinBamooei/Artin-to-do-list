@@ -17,7 +17,7 @@ function render(item,row){
  priceEl.textContent=fmt(price);if(priceEl.nextElementSibling)priceEl.nextElementSibling.textContent=item.unit;
  const fetched=row.fetchedAt?new Date(row.fetchedAt):null,age=fetched&&Number.isFinite(fetched.getTime())?Date.now()-fetched.getTime():Infinity;
  const stale=Boolean(row.stale)||age<0||age>STALE_AFTER,received=dateLabel(row.fetchedAt);
- timeEl.textContent=(stale?'هشدار: قیمت قدیمی':'منبع: TGJU')+(received?' · دریافت: '+received:'')+(row.sourceDate?' · تاریخ ثبت در TGJU: '+row.sourceDate:'');
+ timeEl.textContent=(stale?'هشدار: قیمت قدیمی':'منبع: TGJU')+(received?' · دریافت: '+received:'')+(row.sourceDate?' · زمان ثبت در TGJU: '+row.sourceDate:'');
  timeEl.dataset.stale=String(stale);timeEl.title=row.sourceUrl?'منبع قیمت: '+row.sourceUrl:'منبع قیمت: TGJU';
  return true;
 }
