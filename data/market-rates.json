@@ -1,56 +1,46 @@
 {
   "source": "TGJU",
-  "checkedAt": "2026-10-17T13:11:00Z",
+  "checkedAt": "2026-10-17T16:21:33Z",
   "scheduleMinutes": 5,
   "successfulItems": [
+    "usd",
+    "eur",
+    "gold",
     "oil"
   ],
-  "failedItems": {
-    "usd": "Price changed by more than 45%; refusing suspicious update",
-    "gold": "Gold price outside sanity bounds: 2620130000.21",
-    "eur": "Price changed by more than 45%; refusing suspicious update"
-  },
+  "failedItems": {},
   "items": {
     "usd": {
-      "price": 2638000.0,
-      "fetchedAt": "2026-10-17T13:08:12Z",
-      "sourceDate": "15:09:49",
+      "price": 2638050.0,
+      "fetchedAt": "2026-10-17T16:21:33Z",
+      "sourceDate": "19:09:14",
       "source": "TGJU",
       "sourceUrl": "https://www.tgju.org/profile/price_dollar_rl",
-      "unit": "IRR",
-      "stale": true,
-      "lastError": "Price changed by more than 45%; refusing suspicious update"
+      "unit": "IRR"
     },
     "gold": {
-      "price": 262013000.0,
-      "fetchedAt": "2026-10-17T13:08:12Z",
-      "sourceDate": "15:09:40",
+      "price": 262071000.0,
+      "fetchedAt": "2026-10-17T16:21:33Z",
+      "sourceDate": "19:09:42",
       "source": "TGJU",
       "sourceUrl": "https://www.tgju.org/profile/geram18",
-      "unit": "IRR",
-      "stale": true,
-      "lastError": "Gold price outside sanity bounds: 2620130000.21"
+      "unit": "IRR"
     },
     "eur": {
-      "price": 2965500.0,
-      "fetchedAt": "2026-10-17T13:08:12Z",
-      "sourceDate": "15:10:38",
+      "price": 2965100.0,
+      "fetchedAt": "2026-10-17T16:21:33Z",
+      "sourceDate": "19:10:42",
       "source": "TGJU",
       "sourceUrl": "https://www.tgju.org/profile/price_eur",
-      "unit": "IRR",
-      "stale": true,
-      "lastError": "Price changed by more than 45%; refusing suspicious update"
+      "unit": "IRR"
     },
     "oil": {
-      "label": "نفت برنت",
       "price": 109.86,
-      "unit": "دلار / بشکه",
+      "fetchedAt": "2026-10-17T16:21:33Z",
+      "sourceDate": "04:51:30",
       "source": "TGJU",
       "sourceUrl": "https://www.tgju.org/profile/energy-brent-oil",
-      "sourceDate": "04:51:30",
-      "fetchedAt": "2026-10-17T13:11:00Z",
-      "stale": false
+      "unit": "USD/barrel"
     }
-  },
-  "lastAttemptAt": "2026-10-17T13:11:00Z"
+  }
 }
