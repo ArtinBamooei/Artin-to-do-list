@@ -10,7 +10,7 @@ from pathlib import Path
 from urllib.request import Request, urlopen
 
 ROOT = Path(__file__).resolve().parents[1]
-OUTPUT = ROOT / "market-prices.json"
+OUTPUT = ROOT / "data" / "market-rates.json"
 BASE = "https://www.tgju.org/profile/"
 TIMEOUT = 18
 HEADERS = {
@@ -77,22 +77,21 @@ def parse_price(page: str, item: dict) -> tuple[float, str | None]:
     m = re.search(r"زمان\s+ثبت\s+آخرین\s+نرخ\s*([^\n]{1,45})", text)
     if m:
         source_time = m.group(1).strip(" :-")
-    # TGJU currency and domestic-gold profile values are expressed in rials;
-    # the site UI displays toman, so convert those values before publishing.
-    if not item.get("oil"):
-        price /= 10
+    # Keep TGJU's raw quote. The frontend converts rial-denominated markets to toman.
     return price, source_time or None
 
 def load_existing() -> dict:
     try:
         return json.loads(OUTPUT.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError):
-        return {"source": "TGJU", "items": {}}
+        return {"source": "TGJU", "checkedAt": None, "scheduleMinutes": 5, "successfulItems": [], "failedItems": {}, "items": {}}
 
 def main() -> None:
     data = load_existing()
     data.setdefault("source", "TGJU")
     data.setdefault("items", {})
+    data.setdefault("successfulItems", [])
+    data.setdefault("failedItems", {})
     fetched_at = datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
     successes = 0
     errors = {}
@@ -123,7 +122,7 @@ def main() -> None:
                 "unit": item["unit"],
                 "source": "TGJU",
                 "sourceUrl": url,
-                "sourceTime": source_time,
+                "sourceDate": source_time,
                 "fetchedAt": fetched_at,
                 "stale": False,
             }
@@ -136,10 +135,11 @@ def main() -> None:
             if key in data["items"]:
                 data["items"][key]["stale"] = True
                 data["items"][key]["lastError"] = str(exc)[:180]
-    data["updatedAt"] = fetched_at if successes else data.get("updatedAt")
+    data["checkedAt"] = fetched_at if successes else data.get("checkedAt")
     data["lastAttemptAt"] = fetched_at
-    data["successCount"] = successes
-    data["errors"] = errors
+    data["scheduleMinutes"] = 5
+    data["successfulItems"] = [key for key in ITEMS if key in data["items"] and key not in errors]
+    data["failedItems"] = errors
     OUTPUT.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     # Partial successes are useful, but fail the job when all upstream pages fail.
     if successes == 0:
