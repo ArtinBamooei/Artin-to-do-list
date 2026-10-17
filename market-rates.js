@@ -23,7 +23,7 @@ function render(item,row){
 }
 async function fetchMarketCurrencies(){
  try{
-  const response=await fetch(DATA_URL,{cache:'no-store',headers:{Accept:'application/json'}});
+  const response=await fetch(DATA_URL+'?refresh='+Date.now(),{cache:'no-store',headers:{Accept:'application/json'}});
   if(!response.ok)throw new Error('HTTP '+response.status);
   const data=await response.json(),items=data.items||{};
   let valid=0,stale=0;
@@ -41,6 +41,6 @@ async function fetchMarketCurrencies(){
  }
 }
 window.fetchMarketCurrencies=fetchMarketCurrencies;
-document.addEventListener('DOMContentLoaded',fetchMarketCurrencies,{once:true});
+// index.html owns the initial load and refresh button; avoid duplicate requests here.
 setInterval(fetchMarketCurrencies,5*60*1000);
 })();
