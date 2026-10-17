@@ -1,56 +1,46 @@
 {
   "source": "TGJU",
-  "checkedAt": "2026-10-17T18:43:27Z",
+  "checkedAt": "2026-10-17T20:54:08Z",
   "scheduleMinutes": 5,
   "successfulItems": [
+    "usd",
+    "eur",
+    "gold",
     "oil"
   ],
-  "failedItems": {
-    "usd": "Price changed by more than 45%; refusing suspicious update",
-    "gold": "Gold price outside sanity bounds: 2618220000.28",
-    "eur": "Price changed by more than 45%; refusing suspicious update"
-  },
+  "failedItems": {},
   "items": {
     "usd": {
       "price": 2638000.0,
-      "fetchedAt": "2026-10-17T18:35:36Z",
+      "fetchedAt": "2026-10-17T20:54:08Z",
       "sourceDate": "19:59:22",
       "source": "TGJU",
       "sourceUrl": "https://www.tgju.org/profile/price_dollar_rl",
-      "unit": "IRR",
-      "stale": true,
-      "lastError": "Price changed by more than 45%; refusing suspicious update"
+      "unit": "IRR"
     },
     "gold": {
       "price": 261822000.0,
-      "fetchedAt": "2026-10-17T18:35:36Z",
+      "fetchedAt": "2026-10-17T20:54:08Z",
       "sourceDate": "19:59:52",
       "source": "TGJU",
       "sourceUrl": "https://www.tgju.org/profile/geram18",
-      "unit": "IRR",
-      "stale": true,
-      "lastError": "Gold price outside sanity bounds: 2618220000.28"
+      "unit": "IRR"
     },
     "eur": {
       "price": 2965600.0,
-      "fetchedAt": "2026-10-17T18:35:36Z",
+      "fetchedAt": "2026-10-17T20:54:08Z",
       "sourceDate": "19:59:57",
       "source": "TGJU",
       "sourceUrl": "https://www.tgju.org/profile/price_eur",
-      "unit": "IRR",
-      "stale": true,
-      "lastError": "Price changed by more than 45%; refusing suspicious update"
+      "unit": "IRR"
     },
     "oil": {
-      "label": "نفت برنت",
       "price": 109.86,
-      "unit": "دلار / بشکه",
+      "fetchedAt": "2026-10-17T20:54:08Z",
+      "sourceDate": "04:51:30",
       "source": "TGJU",
       "sourceUrl": "https://www.tgju.org/profile/energy-brent-oil",
-      "sourceDate": "04:51:30",
-      "fetchedAt": "2026-10-17T18:43:27Z",
-      "stale": false
+      "unit": "USD/barrel"
     }
-  },
-  "lastAttemptAt": "2026-10-17T18:43:27Z"
+  }
 }
