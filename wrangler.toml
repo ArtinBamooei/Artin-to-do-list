@@ -1,0 +1,4 @@
+name = "artin-market-api"
+main = "worker/market-api.js"
+compatibility_date = "2026-10-17"
+workers_dev = true
