@@ -1,0 +1,32 @@
+#personalAssistant{--pa-accent:var(--green,#218c55);--pa-card:var(--card,#fff);--pa-bg:var(--bg,#f4f8f2);--pa-ink:var(--ink,#203528);--pa-muted:var(--muted,#718579);--pa-line:var(--line,#dcebdd);font-family:"Vazirmatn",Tahoma,sans-serif;direction:rtl;z-index:10000;position:fixed;bottom:22px;left:22px;color:var(--pa-ink)}
+#personalAssistant *{box-sizing:border-box}
+#personalAssistant button,#personalAssistant textarea{font:inherit}
+#personalAssistant .pa-toggle{display:flex;align-items:center;gap:9px;border:0;border-radius:999px;padding:12px 17px;background:linear-gradient(135deg,#2caf69,#187a49);color:#fff;box-shadow:0 8px 28px #176d3e35;font-weight:800;font-size:13px;cursor:pointer}
+#personalAssistant .pa-toggle:hover{filter:brightness(1.05);transform:translateY(-1px)}
+#personalAssistant .pa-orb{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:#ffffff28;font-size:18px}
+#personalAssistant .pa-panel{position:absolute;left:0;bottom:62px;width:min(380px,calc(100vw - 28px));height:min(560px,calc(100dvh - 110px));min-height:360px;display:flex;flex-direction:column;overflow:hidden;border:1px solid var(--pa-line);border-radius:19px;background:var(--pa-card);box-shadow:0 20px 65px #0c241b30}
+#personalAssistant .pa-panel[hidden]{display:none}
+#personalAssistant .pa-head{display:flex;align-items:center;gap:10px;padding:13px 14px;background:linear-gradient(120deg,color-mix(in srgb,var(--pa-accent) 12%,var(--pa-card)),var(--pa-card));border-bottom:1px solid var(--pa-line)}
+#personalAssistant .pa-avatar{width:39px;height:39px;display:grid;place-items:center;flex:0 0 auto;border-radius:13px;background:var(--pa-accent);color:#fff;font-size:20px}
+#personalAssistant .pa-heading{min-width:0;flex:1}
+#personalAssistant .pa-heading strong{display:block;font-size:13px;font-weight:800}
+#personalAssistant .pa-heading small{display:block;color:var(--pa-muted);font-size:10px}
+#personalAssistant .pa-head-actions{display:flex;gap:3px}
+#personalAssistant .pa-iconbtn{width:31px;height:31px;border:0;border-radius:8px;background:transparent;color:var(--pa-muted);font-size:18px;cursor:pointer}
+#personalAssistant .pa-iconbtn:hover{background:var(--pa-bg);color:var(--pa-ink)}
+#personalAssistant .pa-messages{flex:1;min-height:0;display:flex;flex-direction:column;gap:10px;overflow-y:auto;padding:15px;background:var(--pa-bg)}
+#personalAssistant .pa-message{max-width:88%;padding:10px 12px;border:1px solid var(--pa-line);border-radius:14px;background:var(--pa-card);font-size:12px;line-height:1.9;white-space:pre-wrap;overflow-wrap:anywhere}
+#personalAssistant .pa-assistant{align-self:flex-start;border-top-right-radius:5px}
+#personalAssistant .pa-user{align-self:flex-end;background:color-mix(in srgb,var(--pa-accent) 12%,var(--pa-card));border-color:color-mix(in srgb,var(--pa-accent) 28%,var(--pa-line));border-top-left-radius:5px}
+#personalAssistant .pa-error{align-self:stretch;max-width:100%;background:#fff2ed;border-color:#f0c5b9;color:#8d3828;font-size:11px}
+#personalAssistant .pa-typing{color:var(--pa-muted);font-style:italic}
+#personalAssistant .pa-status{padding:5px 13px 0;color:var(--pa-muted);font-size:9px;background:var(--pa-card)}
+#personalAssistant .pa-form{display:flex;align-items:flex-end;gap:8px;padding:10px;border-top:1px solid var(--pa-line);background:var(--pa-card)}
+#personalAssistant .pa-input{min-width:0;flex:1;max-height:110px;resize:vertical;border:1px solid var(--pa-line);border-radius:12px;background:var(--pa-bg);color:var(--pa-ink);padding:9px 11px;font-size:12px;line-height:1.7;outline-offset:2px}
+#personalAssistant .pa-input:focus{outline:2px solid color-mix(in srgb,var(--pa-accent) 55%,transparent);border-color:var(--pa-accent)}
+#personalAssistant .pa-send{border:0;border-radius:11px;padding:10px 13px;background:var(--pa-accent);color:#fff;font-size:12px;font-weight:800;cursor:pointer}
+#personalAssistant .pa-send:disabled{opacity:.55;cursor:wait}
+#personalAssistant .pa-footnote{padding:0 12px 9px;background:var(--pa-card);color:var(--pa-muted);font-size:9px;text-align:center}
+html[data-theme="dark"] #personalAssistant .pa-error{background:#482a27;color:#f0b0a3;border-color:#75443d}
+@media(max-width:480px){#personalAssistant{left:12px;bottom:12px}#personalAssistant .pa-toggle{padding:10px 14px;font-size:12px}#personalAssistant .pa-panel{bottom:57px;width:calc(100vw - 24px);height:min(620px,calc(100dvh - 88px));min-height:320px;border-radius:16px}#personalAssistant .pa-messages{padding:12px}}
+@media(prefers-reduced-motion:reduce){#personalAssistant *{transition:none!important}}
