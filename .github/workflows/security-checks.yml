@@ -1,0 +1,40 @@
+name: Security and syntax checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: security-checks-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  static-checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Check JavaScript syntax
+        run: |
+          node --check app.js
+          node --check assistant.js
+          node --check market-rates.js
+          node --input-type=module --check < worker/chat-api.js
+          node --input-type=module --check < worker/market-api.js
+      - name: Check Python syntax
+        run: python -m py_compile scripts/scrape_tgju.py scripts/update_market_rates.py
+      - name: Verify strict CSP and no inline code
+        run: |
+          grep -q "Content-Security-Policy" index.html
+          grep -q "script-src 'self'" index.html
+          ! grep -Eq '<script[[:space:]]*>' index.html
+          ! grep -Eq '<style[[:space:]]*>' index.html
+          ! grep -Eiq '[[:space:]]on[a-z]+[[:space:]]*=' index.html
