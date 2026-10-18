@@ -16,7 +16,7 @@ This repository contains a static GitHub Pages application and Cloudflare Worker
 5. The optional market Worker is not wired into the page while `LIVE_API_URL` in `market-rates.js` remains empty. Only deploy it if enabling that feature:
 
    ```sh
-   npx wrangler deploy --config wrangler-market.toml
+   npx wrangler deploy --config wrangler.toml
    ```
 
 ## GitHub account/repository settings to verify
