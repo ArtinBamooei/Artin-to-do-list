@@ -67,7 +67,7 @@
       .replace(/&#39;|&apos;/gi, "'");
     const cellPattern = /<(td|th)\\b[^>]*>([\\s\\S]*?)<\\/\\1\\s*>/gi;
     const tablePattern = /<table\\b[\\s\\S]*?<\\/table\\s*>/gi;
-    return source.replace(tablePattern, table => {
+    const toMarkdown = table => {
       const rows = [];
       const rowPattern = /<tr\\b[^>]*>([\\s\\S]*?)<\\/tr\\s*>/gi;
       let rowMatch;
@@ -89,7 +89,14 @@
       const width = Math.max(...rows.map(row => row.length));
       const line = row => "| " + Array.from({length: width}, (_, index) => (row[index] || "").replace(/\\|/g, "\\\\|")).join(" | ") + " |";
       return "\\n" + line(rows[0]) + "\\n| " + Array(width).fill("---").join(" | ") + " |\\n" + rows.slice(1).map(line).join("\\n") + "\\n";
-    }).replace(/<\\/?(?:tr|td|th)\\b[^>]*>/gi, " ");
+    };
+    let normalized = source.replace(tablePattern, toMarkdown);
+    if (!/<table\\b/i.test(source) && /<t[dh]\\b/i.test(source)) {
+      const firstCell = normalized.search(/<t[dh]\\b/i);
+      const prefix = normalized.slice(0, firstCell);
+      normalized = prefix + toMarkdown(normalized.slice(firstCell));
+    }
+    return normalized.replace(/<\\/?(?:tr|td|th)\\b[^>]*>/gi, " ");
   }
 
   function renderMessageContent(container, content) {
