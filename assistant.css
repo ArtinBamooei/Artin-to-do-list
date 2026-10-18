@@ -44,10 +44,22 @@ html[data-theme="dark"] #personalAssistant .pa-error{background:#482a27;color:#f
 #personalAssistant .pa-message code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:.92em;background:color-mix(in srgb,var(--pa-muted) 12%,var(--pa-card));padding:2px 5px;border-radius:5px;direction:ltr;unicode-bidi:plaintext}
 #personalAssistant .pa-message pre{max-width:100%;overflow-x:auto;white-space:pre;padding:10px;border-radius:9px;background:#17251f;color:#f2f8f3;direction:ltr;text-align:left}
 #personalAssistant .pa-message pre code{background:transparent;color:inherit;padding:0}
-#personalAssistant .pa-table-wrap{max-width:100%;overflow-x:auto;margin:8px 0;border:1px solid var(--pa-line);border-radius:9px;background:var(--pa-card)}
-#personalAssistant .pa-md-table{width:100%;border-collapse:collapse;font-size:11px;line-height:1.7;text-align:right}
-#personalAssistant .pa-md-table th{background:color-mix(in srgb,var(--pa-accent) 11%,var(--pa-card));font-weight:800;white-space:nowrap}
-#personalAssistant .pa-md-table th,#personalAssistant .pa-md-table td{padding:8px 9px;border-bottom:1px solid var(--pa-line);vertical-align:top}
+
+
+
+
+
+
+
+
+#personalAssistant .pa-message.pa-has-table{width:100%;max-width:100%;min-width:0}
+#personalAssistant .pa-table-wrap{display:block;width:100%;max-width:100%;min-width:0;overflow-x:auto;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;margin:8px 0;border:1px solid var(--pa-line);border-radius:9px;background:var(--pa-card)}
+#personalAssistant .pa-md-table{width:max-content;min-width:100%;max-width:none;border-collapse:collapse;table-layout:auto;font-size:10.5px;line-height:1.6;text-align:right}
+#personalAssistant .pa-md-table th{background:color-mix(in srgb,var(--pa-accent) 11%,var(--pa-card));font-weight:800;white-space:nowrap;min-width:28px}
+#personalAssistant .pa-md-table th,#personalAssistant .pa-md-table td{padding:5px 3px;border-bottom:1px solid var(--pa-line);vertical-align:middle;text-align:center}
 #personalAssistant .pa-md-table tr:last-child td{border-bottom:0}
-#personalAssistant .pa-md-table td{overflow-wrap:anywhere;min-width:75px}
+#personalAssistant .pa-md-table td{overflow-wrap:anywhere;min-width:28px;max-width:130px}
+#personalAssistant .pa-md-table .pa-align-left{text-align:left}
+#personalAssistant .pa-md-table .pa-align-center{text-align:center}
+#personalAssistant .pa-md-table .pa-align-right{text-align:right}
 #personalAssistant .pa-message .pa-table-wrap{width:100%}
