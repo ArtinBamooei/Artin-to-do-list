@@ -45,8 +45,27 @@
   function splitTableRow(line) {
     let value = line.trim();
     if (value.startsWith("|")) value = value.slice(1);
-    if (value.endsWith("|")) value = value.slice(0, -1);
-    return value.split("|").map(cell => cell.trim());
+    if (value.endsWith("|")) {
+      let backslashes = 0;
+      for (let i = value.length - 2; i >= 0 && value[i] === "\\"; i--) backslashes++;
+      if (backslashes % 2 === 0) value = value.slice(0, -1);
+    }
+    const cells = [];
+    let cell = "";
+    for (let i = 0; i < value.length; i++) {
+      const char = value[i];
+      if (char === "\\" && value[i + 1] === "|") {
+        cell += "|";
+        i++;
+      } else if (char === "|") {
+        cells.push(cell.trim());
+        cell = "";
+      } else {
+        cell += char;
+      }
+    }
+    cells.push(cell.trim());
+    return cells;
   }
 
   function isTableDivider(line) {
@@ -54,49 +73,73 @@
     return cells.length > 0 && cells.every(cell => /^:?-{3,}:?$/.test(cell));
   }
 
+  // Convert model-generated HTML tables to Markdown before parsing the whole
+  // answer. This allows HTML headings/paragraphs and Markdown tables to coexist.
   function normalizeHtmlTables(source) {
-    const decodeText = value => value
-      .replace(/<br\s*\/?\s*>/gi, " ")
-      .replace(/<\/(?:p|div|li|strong|em|span)>/gi, " ")
-      .replace(/<[^>]*>/g, "")
-      .replace(/&nbsp;/gi, " ")
-      .replace(/&amp;/gi, "&")
-      .replace(/&lt;/gi, "<")
-      .replace(/&gt;/gi, ">")
-      .replace(/&quot;/gi, '"')
-      .replace(/&#39;|&apos;/gi, "'");
-    const cellPattern = /<(td|th)\b[^>]*>([\s\S]*?)<\/\1\s*>/gi;
-    const tablePattern = /<table\b[\s\S]*?<\/table\s*>/gi;
-    const toMarkdown = table => {
-      const rows = [];
-      const rowPattern = /<tr\b[^>]*>([\s\S]*?)<\/tr\s*>/gi;
-      let rowMatch;
-      while ((rowMatch = rowPattern.exec(table))) {
-        const cells = [];
-        cellPattern.lastIndex = 0;
-        let cellMatch;
-        while ((cellMatch = cellPattern.exec(rowMatch[1]))) cells.push(decodeText(cellMatch[2]).trim());
-        if (cells.length) rows.push(cells);
+    const fences = [];
+    let normalized = source.replace(/(^[ \t]*\x60{3,}[^\n]*\n[\s\S]*?^[ \t]*\x60{3,}[ \t]*$)/gm, block => {
+      const index = fences.push(block) - 1;
+      return "\u0000PAFENCE" + index + "\u0000";
+    });
+
+    const cellText = cell => (cell.textContent || "").replace(/\s+/g, " ").trim();
+    const readRows = fragment => {
+      const parse = html => {
+        const doc = new DOMParser().parseFromString(html, "text/html");
+        return Array.from(doc.querySelectorAll("tr")).map(row =>
+          Array.from(row.children)
+            .filter(cell => cell.tagName === "TD" || cell.tagName === "TH")
+            .map(cellText)
+        ).filter(row => row.length);
+      };
+
+      if (/<table\b/i.test(fragment)) {
+        const rows = parse(fragment);
+        if (rows.length) return rows;
+      } else if (/<tr\b/i.test(fragment)) {
+        const rows = parse("<table><tbody>" + fragment + "</tbody></table>");
+        if (rows.length) return rows;
       }
-      if (!rows.length) {
-        const cells = [];
-        cellPattern.lastIndex = 0;
-        let cellMatch;
-        while ((cellMatch = cellPattern.exec(table))) cells.push(decodeText(cellMatch[2]).trim());
-        if (cells.length) rows.push(cells);
-      }
-      if (!rows.length) return decodeText(table);
-      const width = Math.max(...rows.map(row => row.length));
-      const line = row => "| " + Array.from({length: width}, (_, index) => (row[index] || "").replace(/\|/g, "\\|")).join(" | ") + " |";
-      return "\n" + line(rows[0]) + "\n| " + Array(width).fill("---").join(" | ") + " |\n" + rows.slice(1).map(line).join("\n") + "\n";
+
+      const rowFragments = fragment.split(/<\/tr\s*>/i).filter(part => /<(?:td|th)\b/i.test(part));
+      const segments = rowFragments.length > 1 || /<\/tr\s*>/i.test(fragment)
+        ? rowFragments
+        : [fragment];
+      return segments.map(part => {
+        const clean = part.replace(/<\/?tr\b[^>]*>/gi, "");
+        return parse("<table><tbody><tr>" + clean + "</tr></tbody></table>")[0] || [];
+      }).filter(row => row.length);
     };
-    let normalized = source.replace(tablePattern, toMarkdown);
-    if (!/<table\b/i.test(source) && /<t[dh]\b/i.test(source)) {
-      const firstCell = normalized.search(/<t[dh]\b/i);
+
+    const rowsToMarkdown = rows => {
+      const cleanRows = rows
+        .map(row => row.map(value => String(value == null ? "" : value).replace(/\s+/g, " ").trim()))
+        .filter(row => row.some(value => value));
+      if (!cleanRows.length) return "";
+      const width = Math.max(...cleanRows.map(row => row.length));
+      const renderRow = row => "| " + Array.from({ length: width }, (_, index) =>
+        (row[index] || "").replace(/\\/g, "\\\\").replace(/\|/g, "\\|")
+      ).join(" | ") + " |";
+      return "\n" + renderRow(cleanRows[0]) + "\n| " +
+        Array(width).fill("---").join(" | ") + " |\n" +
+        cleanRows.slice(1).map(renderRow).join("\n") + "\n";
+    };
+
+    const convert = fragment => {
+      const rows = readRows(fragment);
+      return rows.length ? rowsToMarkdown(rows) : fragment;
+    };
+
+    normalized = normalized.replace(/<table\b[\s\S]*?(?:<\/table\s*>|$)/gi, convert);
+    if (!/<table\b/i.test(normalized) && /<(?:tr|td|th)\b/i.test(normalized)) {
+      const firstCell = normalized.search(/<(?:tr|td|th)\b/i);
       const prefix = normalized.slice(0, firstCell);
-      normalized = prefix + toMarkdown(normalized.slice(firstCell));
+      const converted = convert(normalized.slice(firstCell));
+      if (converted !== normalized.slice(firstCell)) normalized = prefix + converted;
     }
-    return normalized.replace(/<\/?(?:tr|td|th)\b[^>]*>/gi, " ").replace(/<\s*$/, "");
+
+    normalized = normalized.replace(/\u0000PAFENCE(\d+)\u0000/g, (_, index) => fences[Number(index)]);
+    return normalized;
   }
 
   function appendSafeHtml(parent, source) {
