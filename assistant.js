@@ -2,7 +2,7 @@
   "use strict";
 
   // Replace this placeholder with your deployed Worker URL ending in /api/chat.
-  const API_URL = "https://artin-personal-assistant.YOUR-SUBDOMAIN.workers.dev/api/chat";
+  const API_URL = "https://artin-personal-assistant.artinbamooeizowj.workers.dev/api/chat";
   const root = document.getElementById("personalAssistant");
   if (!root) return;
 
