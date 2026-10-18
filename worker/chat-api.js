@@ -10,22 +10,26 @@ const ALLOWED_ORIGINS = new Set([
 ]);
 const MODEL = "openai/gpt-oss-20b";
 const WINDOW_MS = 60_000;
-const MAX_REQUESTS_PER_WINDOW = 12;
+const MAX_REQUESTS_PER_WINDOW = 10;
 const recentRequests = new Map();
 
 function json(data, status, origin) {
-  return new Response(JSON.stringify(data), {
-    status,
-    headers: {
-      "Content-Type": "application/json; charset=utf-8",
-      "Cache-Control": "no-store, max-age=0",
-      "Access-Control-Allow-Origin": origin,
-      "Access-Control-Allow-Methods": "POST, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type",
-      "Vary": "Origin",
-      "X-Content-Type-Options": "nosniff",
-    },
+  const headers = new Headers({
+    "Content-Type": "application/json; charset=utf-8",
+    "Cache-Control": "no-store, max-age=0",
+    "Vary": "Origin",
+    "X-Content-Type-Options": "nosniff",
+    "X-Frame-Options": "DENY",
+    "Referrer-Policy": "no-referrer",
+    "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
+    "Strict-Transport-Security": "max-age=31536000",
   });
+  if (origin && origin !== "null") {
+    headers.set("Access-Control-Allow-Origin", origin);
+    headers.set("Access-Control-Allow-Methods", "POST, OPTIONS");
+    headers.set("Access-Control-Allow-Headers", "Content-Type");
+  }
+  return new Response(JSON.stringify(data), { status, headers });
 }
 
 function allowed(request) {
@@ -62,18 +66,33 @@ export default {
           "Access-Control-Allow-Headers": "Content-Type",
           "Access-Control-Max-Age": "86400",
           "Vary": "Origin",
+          "X-Content-Type-Options": "nosniff",
+          "Referrer-Policy": "no-referrer",
         },
       });
     }
 
     const url = new URL(request.url);
-    if (url.pathname !== "/api/chat") return json({ error: "Not found" }, 404, origin || "null");
-    if (request.method !== "POST") return json({ error: "Method not allowed" }, 405, origin || "null");
-    if (!origin) return json({ error: "Origin not allowed" }, 403, "null");
+    if (url.pathname !== "/api/chat") return json({ error: "Not found" }, 404, "");
+    if (!origin) return json({ error: "Origin not allowed" }, 403, "");
+    if (request.method !== "POST") return json({ error: "Method not allowed" }, 405, origin);
+    const contentType = request.headers.get("Content-Type") || "";
+    if (!/^application\/json(?:\s*;|\s*$)/i.test(contentType)) {
+      return json({ error: "Content type not supported." }, 415, origin);
+    }
     if (!env.GROQ_API_KEY) return json({ error: "Server API key is not configured." }, 503, origin);
 
     const ip = request.headers.get("CF-Connecting-IP") || "unknown";
-    if (rateLimited(ip)) return json({ error: "تعداد درخواست‌ها زیاد است؛ یک دقیقه دیگر دوباره تلاش کن." }, 429, origin);
+    if (env.CHAT_RATE_LIMITER) {
+      try {
+        const { success } = await env.CHAT_RATE_LIMITER.limit({ key: ip });
+        if (!success) return json({ error: "تعداد درخواست‌ها زیاد است؛ یک دقیقه دیگر دوباره تلاش کن." }, 429, origin);
+      } catch {
+        return json({ error: "سرویس موقتاً در دسترس نیست." }, 503, origin);
+      }
+    } else if (rateLimited(ip)) {
+      return json({ error: "تعداد درخواست‌ها زیاد است؛ یک دقیقه دیگر دوباره تلاش کن." }, 429, origin);
+    }
 
     const declaredLength = Number(request.headers.get("Content-Length") || 0);
     if (declaredLength > 16_000) return json({ error: "پیام‌ها بیش از حد طولانی‌اند." }, 413, origin);
