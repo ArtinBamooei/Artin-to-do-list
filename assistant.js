@@ -171,8 +171,15 @@
   }
 
   function renderMessageContent(container, content) {
-    const source = String(content).replace(/\r\n?/g, "\n");
-    if (/<\/?(?:table|thead|tbody|tfoot|tr|th|td|p|ul|ol|li|h[1-6]|pre|blockquote)\b/i.test(source)) {
+    const source = normalizeHtmlTables(String(content).replace(/\r\n?/g, "\n"));
+    const lines = source.split("\n");
+    const hasMarkdownTable = lines.some((line, index) =>
+      index + 1 < lines.length && line.includes("|") && isTableDivider(lines[index + 1])
+    );
+
+    // Do not let a single HTML paragraph/list tag divert a mixed Markdown answer
+    // away from the Markdown table parser.
+    if (/<\/?(?:table|thead|tbody|tfoot|tr|th|td|p|ul|ol|li|h[1-6]|pre|blockquote)\b/i.test(source) && !hasMarkdownTable) {
       const wrapper = document.createElement("div");
       wrapper.className = "pa-html-content";
       appendSafeHtml(wrapper, source);
@@ -185,7 +192,7 @@
       container.appendChild(wrapper);
       return;
     }
-    const lines = source.split("\n");
+
     let i = 0;
     while (i < lines.length) {
       const line = lines[i];
@@ -206,12 +213,21 @@
 
       if (i + 1 < lines.length && line.includes("|") && isTableDivider(lines[i + 1])) {
         const headers = splitTableRow(line);
+        const dividerCells = splitTableRow(lines[i + 1]);
+        const alignments = headers.map((_, index) => {
+          const divider = dividerCells[index] || "---";
+          if (divider.startsWith(":") && divider.endsWith(":")) return "pa-align-center";
+          if (divider.endsWith(":")) return "pa-align-left";
+          if (divider.startsWith(":")) return "pa-align-right";
+          return "pa-align-default";
+        });
         const table = document.createElement("table");
         table.className = "pa-md-table";
         const thead = document.createElement("thead");
         const headerRow = document.createElement("tr");
-        headers.forEach(value => {
+        headers.forEach((value, index) => {
           const th = document.createElement("th");
+          th.className = alignments[index];
           appendInline(th, value);
           headerRow.appendChild(th);
         });
@@ -224,6 +240,7 @@
           const tr = document.createElement("tr");
           headers.forEach((_, index) => {
             const td = document.createElement("td");
+            td.className = alignments[index];
             appendInline(td, cells[index] || "");
             tr.appendChild(td);
           });
@@ -291,6 +308,7 @@
     item.className = "pa-message pa-" + role + (extraClass ? " " + extraClass : "");
     if (role === "assistant" && !extraClass.includes("pa-typing")) {
       renderMessageContent(item, content);
+      if (item.querySelector(".pa-table-wrap")) item.classList.add("pa-has-table");
     } else {
       item.textContent = content;
     }
