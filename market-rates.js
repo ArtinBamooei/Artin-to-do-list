@@ -11,13 +11,18 @@ const ITEMS=[
  {key:'oil',id:'priceOil',timeId:'timeOil',unit:'دلار / بشکه',irr:false}
 ];
 const el=id=>document.getElementById(id),fmt=n=>new Intl.NumberFormat('fa-IR',{maximumFractionDigits:2}).format(n);
+const loadingTimers=new WeakMap();
+function pxStart(card){if(!card)return;card.classList.remove('px-done');card.classList.add('is-loading');const num=card.querySelector('.px-num');if(!num)return;clearInterval(loadingTimers.get(card));loadingTimers.set(card,setInterval(()=>{let s='';for(let i=0;i<6;i++){if(i===3)s+='٬';s+='۰۱۲۳۴۵۶۷۸۹'[Math.floor(Math.random()*10)]}num.textContent=s},85))}
+function pxFinish(card){if(!card)return;clearInterval(loadingTimers.get(card));loadingTimers.delete(card);card.classList.remove('is-loading');card.classList.add('px-done');setTimeout(()=>card.classList.remove('px-done'),500)}
+function startMarketLoading(){for(const item of ITEMS)pxStart(el('px-'+item.key))}
+
 function dateLabel(value){if(!value)return '';const d=new Date(value);if(!Number.isFinite(d.getTime()))return '';return new Intl.DateTimeFormat('fa-IR',{timeZone:'Asia/Tehran',year:'numeric',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}).format(d)}
 function render(item,row){
  const priceEl=el(item.id),timeEl=el(item.timeId);if(!priceEl||!timeEl)return false;
  const raw=Number(row&&row.price);
- if(!Number.isFinite(raw)||raw<=0){priceEl.textContent='—';if(priceEl.nextElementSibling)priceEl.nextElementSibling.textContent=item.unit;timeEl.textContent='هنوز داده‌ای از TGJU ثبت نشده';timeEl.dataset.stale='true';return false}
+ if(!Number.isFinite(raw)||raw<=0){const num=priceEl.querySelector('.px-num')||priceEl;num.textContent='—';if(priceEl.nextElementSibling)priceEl.nextElementSibling.textContent=item.unit;timeEl.textContent='هنوز داده‌ای از TGJU ثبت نشده';timeEl.dataset.stale='true';pxFinish(el('px-'+item.key));return false}
  const price=item.irr?raw/10:raw;
- priceEl.textContent=fmt(price);if(priceEl.nextElementSibling)priceEl.nextElementSibling.textContent=item.unit;
+ const num=priceEl.querySelector('.px-num')||priceEl;num.textContent=fmt(price);if(priceEl.nextElementSibling)priceEl.nextElementSibling.textContent=item.unit;pxFinish(el('px-'+item.key));
  const fetched=row.fetchedAt?new Date(row.fetchedAt):null,age=fetched&&Number.isFinite(fetched.getTime())?Date.now()-fetched.getTime():Infinity;
  const stale=Boolean(row.stale)||age<0||age>STALE_AFTER,received=dateLabel(row.fetchedAt);
  timeEl.textContent='';
@@ -25,6 +30,7 @@ function render(item,row){
  return true;
 }
 async function fetchMarketCurrencies(){
+ startMarketLoading();
  try{
   let response,data,live=false;
   if(LIVE_API_URL){
@@ -42,7 +48,7 @@ async function fetchMarketCurrencies(){
   if(status){const checked=dateLabel(data.checkedAt);const sourceDate=(items.usd&&items.usd.sourceDate)|| (items.gold&&items.gold.sourceDate);status.textContent=valid===0?'قیمت‌ها هنوز دریافت نشده‌اند؛ اجرای GitHub Actions را بررسی کنید.':(live?'دریافت مستقیم از TGJU':'آخرین دریافت از TGJU')+(checked?' · '+checked:'')+(sourceDate?' · تاریخ نرخ در منبع: '+sourceDate:'')+(stale?' · '+stale+' قیمت قدیمی':'')}
   return {valid,stale,errors:4-valid,checkedAt:data.checkedAt};
  }catch(error){
-  for(const item of ITEMS){const time=el(item.timeId);if(time){time.dataset.stale='true';time.textContent='هشدار: دریافت داده ناموفق بود'}}
+  for(const item of ITEMS){const time=el(item.timeId);if(time){time.dataset.stale='true';time.textContent='هشدار: دریافت داده ناموفق بود'}pxFinish(el('px-'+item.key));const price=el(item.id);if(price){const num=price.querySelector('.px-num')||price;if(num.textContent.match(/[۰-۹]{3}/))num.textContent='—'}}
   const status=el('marketStatus');if(status)status.textContent='دریافت فایل قیمت ناموفق بود؛ اتصال یا اجرای GitHub Actions را بررسی کنید.';
   return {valid:0,errors:4,error:String(error)};
  }
