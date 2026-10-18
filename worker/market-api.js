@@ -79,6 +79,16 @@ export default {
     if (!allowedOrigin) return response({ error: "Origin not allowed" }, 403, "");
     if (request.method !== "GET") return response({ error: "Method not allowed" }, 405, allowedOrigin);
 
+    const ip = request.headers.get("CF-Connecting-IP") || "unknown";
+    if (env.MARKET_RATE_LIMITER) {
+      try {
+        const { success } = await env.MARKET_RATE_LIMITER.limit({ key: ip });
+        if (!success) return response({ error: "Too many requests." }, 429, allowedOrigin);
+      } catch {
+        return response({ error: "Service temporarily unavailable." }, 503, allowedOrigin);
+      }
+    }
+
     // A short edge cache prevents a burst of page reloads from hammering TGJU.
     const cacheKey = new Request(new URL("/api/market", url.origin).toString(), { method: "GET" });
     const cache = caches.default;
