@@ -52,6 +52,11 @@ function response(body, status, origin) {
       "Access-Control-Allow-Methods": "GET, OPTIONS",
       "Access-Control-Allow-Headers": "Content-Type",
       "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "DENY",
+      "Referrer-Policy": "no-referrer",
+      "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
+      "Strict-Transport-Security": "max-age=31536000",
     },
   });
 }
@@ -70,8 +75,9 @@ export default {
         "Vary": "Origin",
       }});
     }
-    if (request.method !== "GET" || url.pathname !== "/api/market") return response({ error: "Not found" }, 404, allowedOrigin || "null");
-    if (!allowedOrigin) return response({ error: "Origin not allowed" }, 403, "null");
+    if (url.pathname !== "/api/market") return response({ error: "Not found" }, 404, "");
+    if (!allowedOrigin) return response({ error: "Origin not allowed" }, 403, "");
+    if (request.method !== "GET") return response({ error: "Method not allowed" }, 405, allowedOrigin);
 
     // A short edge cache prevents a burst of page reloads from hammering TGJU.
     const cacheKey = new Request(new URL("/api/market", url.origin).toString(), { method: "GET" });
