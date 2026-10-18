@@ -3,7 +3,8 @@ name: Update market prices
 
 on:
   schedule:
-    - cron: "*/5 * * * *"
+    # Avoid the top of each hour, when GitHub scheduled jobs are more likely to be delayed.
+    - cron: "3,8,13,18,23,28,33,38,43,48,53,58 * * * *"
   workflow_dispatch:
   push:
     paths:
