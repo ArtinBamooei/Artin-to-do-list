@@ -99,8 +99,50 @@
     return normalized.replace(/<\\/?(?:tr|td|th)\\b[^>]*>/gi, " ");
   }
 
+  function appendSafeHtml(parent, source) {
+    const allowed = new Set(["P", "BR", "STRONG", "B", "EM", "I", "UL", "OL", "LI", "TABLE", "THEAD", "TBODY", "TFOOT", "TR", "TH", "TD", "PRE", "CODE", "H1", "H2", "H3", "H4", "H5", "H6", "BLOCKQUOTE"]);
+    let html = source;
+    if (!/<table\b/i.test(html) && /<(?:tr|td|th)\b/i.test(html)) {
+      html = "<table><tbody>" + html + "</tbody></table>";
+    }
+    const parsed = new DOMParser().parseFromString(html, "text/html");
+    function copyNode(sourceNode, targetParent) {
+      if (sourceNode.nodeType === Node.TEXT_NODE) {
+        targetParent.appendChild(document.createTextNode(sourceNode.nodeValue || ""));
+        return;
+      }
+      if (sourceNode.nodeType !== Node.ELEMENT_NODE) return;
+      const tag = sourceNode.tagName;
+      if (!allowed.has(tag)) {
+        if (!["SCRIPT", "STYLE", "IFRAME", "OBJECT", "SVG", "MATH"].includes(tag)) {
+          Array.from(sourceNode.childNodes).forEach(child => copyNode(child, targetParent));
+        }
+        return;
+      }
+      const clean = document.createElement(tag.toLowerCase());
+      if (tag === "TABLE") clean.className = "pa-md-table";
+      Array.from(sourceNode.childNodes).forEach(child => copyNode(child, clean));
+      targetParent.appendChild(clean);
+    }
+    Array.from(parsed.body.childNodes).forEach(node => copyNode(node, parent));
+  }
+
   function renderMessageContent(container, content) {
-    const lines = normalizeHtmlTables(String(content)).replace(/\\r\\n?/g, "\\n").split("\\n");
+    const source = String(content).replace(/\r\n?/g, "\n");
+    if (/<\/?(?:table|thead|tbody|tfoot|tr|th|td|p|ul|ol|li|h[1-6]|pre|blockquote)\b/i.test(source)) {
+      const wrapper = document.createElement("div");
+      wrapper.className = "pa-html-content";
+      appendSafeHtml(wrapper, source);
+      wrapper.querySelectorAll("table").forEach(table => {
+        const scroll = document.createElement("div");
+        scroll.className = "pa-table-wrap";
+        table.parentNode.insertBefore(scroll, table);
+        scroll.appendChild(table);
+      });
+      container.appendChild(wrapper);
+      return;
+    }
+    const lines = source.split("\n");
     let i = 0;
     while (i < lines.length) {
       const line = lines[i];
