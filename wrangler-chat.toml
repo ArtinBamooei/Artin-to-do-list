@@ -2,3 +2,8 @@ name = "artin-personal-assistant"
 main = "worker/chat-api.js"
 compatibility_date = "2026-10-17"
 workers_dev = true
+
+[[ratelimits]]
+name = "CHAT_RATE_LIMITER"
+namespace_id = "7319042"
+simple = { limit = 10, period = 60 }
