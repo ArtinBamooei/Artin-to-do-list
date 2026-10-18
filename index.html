@@ -16,7 +16,7 @@ html[data-theme="dark"] .logo,html[data-theme="dark"] .submit,html[data-theme="d
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 html[data-theme="dark"] .tag.high{background:#482a27;color:#f0a99c}html[data-theme="dark"] .tag.medium{background:#403821;color:#e6ce8a}html[data-theme="dark"] .tag.low{background:#2b3d43;color:#b1d6d0}html[data-theme="dark"] .prio.active[data-priority=high]{background:#482a27;color:#f0a99c;border-color:#75443d}html[data-theme="dark"] .prio.active[data-priority=medium]{background:#403821;color:#e6ce8a;border-color:#66552c}html[data-theme="dark"] .prio.active[data-priority=low]{background:#2b3d43;color:#b1d6d0;border-color:#527a7c}html[data-theme="dark"] .check{border-color:#66786a}html[data-theme="dark"] .toast{background:#dce7e8;color:#202833}
 .market{margin:0 0 16px;padding:15px 17px}.market-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}.market-head h2{font-size:15px;margin:0}.market-head p{font-size:10px;color:var(--muted);margin:0}.market-refresh{display:inline-flex;align-items:center;gap:5px;border:1px solid var(--line);border-radius:9px;background:var(--soft);color:var(--ink);padding:6px 9px;font-size:11px;white-space:nowrap}.market-refresh .material-symbols-rounded{font-size:16px}.market-refresh:disabled{opacity:.6;cursor:wait}.market-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}.market-item{min-width:0;display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;column-gap:8px;row-gap:1px;padding:10px;border:1px solid var(--line);border-radius:12px;background:color-mix(in srgb,var(--soft) 28%,var(--card))}.market-symbol{grid-row:span 4;display:grid;place-items:center;width:34px;height:34px;border-radius:10px;font-size:11px;font-weight:800}.market-symbol.usd{background:#e0efe6;color:#286d4b}.market-symbol.eur{background:#e4e9fb;color:#4c5f9a}.market-symbol.gold{background:#f7edd5;color:#94702b}.market-symbol.oil{background:#e1e8ed;color:#536a7c}.market-symbol.gbp{background:#e8e2f5;color:#66528e}.market-symbol.currency-mark{font-size:23px;line-height:1}.market-symbol .material-symbols-rounded{font-size:19px}.market-name{font-size:10px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.market-item strong{font-size:clamp(13px,1.7vw,17px);line-height:1.5;font-weight:800;font-variant-numeric:tabular-nums;direction:rtl;overflow-wrap:anywhere}.market-item small{font-size:9px;color:var(--muted);line-height:1.4}.market-item .market-time{display:none}.market-time[data-stale="true"]{color:#b7791f}.market-foot{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-top:10px;font-size:9px;color:var(--muted)}.market-foot #marketStatus{flex:1 1 100%;padding:7px 10px;border:1px solid var(--line);border-radius:9px;background:var(--soft);color:var(--ink);font-size:10px;line-height:1.7}html[data-theme="dark"] .market-symbol.usd{background:#263b36;color:#b7d9c8}html[data-theme="dark"] .market-symbol.eur{background:#30364c;color:#c1caf4}html[data-theme="dark"] .market-symbol.gold{background:#443b2b;color:#e7cf91}html[data-theme="dark"] .market-symbol.oil{background:#2b3945;color:#b9cbd8}html[data-theme="dark"] .market-symbol.gbp{background:#3a334c;color:#d0c0f1}@media(max-width:700px){.market{padding:12px}.market-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.market-item{padding:9px}.market-item strong{font-size:15px}.market-foot{font-size:9px}}
-</style></head>
+</style><link rel="stylesheet" href="./assistant.css?v=1"></head>
 <body><main class="wrap">
 <section class="clockbox" aria-label="تاریخ، ساعت و آب‌وهوا"><div class="clock-main"><div class="clock-label"><span class="material-symbols-rounded" aria-hidden="true">schedule</span><span>تاریخ و ساعت</span></div><div class="clock-date" id="liveDate">در حال بارگذاری تاریخ…</div><div class="clock-time" id="liveTime" aria-live="off">--:--:--</div></div><div class="weather" id="weatherBox"><span class="material-symbols-rounded weather-icon" id="weatherIcon" aria-hidden="true">partly_cloudy_day</span><div class="weather-info"><div class="weather-title" id="weatherTitle">آب‌وهوای شهر انتخابی</div><div class="weather-current" id="weatherCurrent">--°</div><div class="weather-detail" id="weatherDetail">ابتدا شهر را انتخاب کنید</div><div class="weather-next" id="weatherNext">پیش‌بینی دو ساعت آینده</div></div><div class="weather-controls"><select class="weather-select" id="weatherCity" aria-label="انتخاب شهر"><option value="shiraz">شیراز</option></select><button type="button" class="weather-action" id="weatherBtn">نمایش هوا</button></div></div></section>
 <section class="market panel" aria-label="قیمت ارز، طلا و نفت">
@@ -91,4 +91,27 @@ anchor=startMonth(from(today()));drawIcons();render();updateConnection();
 if('serviceWorker' in navigator && location.protocol!=='file:'){window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js').catch(()=>{}))}
 
 })();
-</script></body></html>
+</script><aside id="personalAssistant" aria-label="دستیار هوش مصنوعی">
+  <section class="pa-panel" hidden aria-label="گفت‌وگو با دستیار">
+    <header class="pa-head">
+      <div class="pa-avatar" aria-hidden="true">✦</div>
+      <div class="pa-heading"><strong>دستیار شخصی</strong><small>هوش مصنوعی · پاسخ‌گویی فارسی</small></div>
+      <div class="pa-head-actions">
+        <button type="button" class="pa-iconbtn pa-clear" aria-label="پاک کردن گفت‌وگو" title="گفت‌وگوی جدید">↻</button>
+        <button type="button" class="pa-iconbtn pa-close" aria-label="بستن دستیار" title="بستن">×</button>
+      </div>
+    </header>
+    <div class="pa-messages" role="log" aria-live="polite" aria-relevant="additions text"></div>
+    <div class="pa-status">پاسخ‌ها توسط هوش مصنوعی تولید می‌شوند</div>
+    <form class="pa-form">
+      <textarea class="pa-input" rows="1" maxlength="3000" placeholder="پیامت را بنویس…" aria-label="پیام برای دستیار"></textarea>
+      <button type="submit" class="pa-send">ارسال</button>
+    </form>
+    <div class="pa-footnote">اطلاعات حساس یا رمزها را وارد نکن.</div>
+  </section>
+  <button type="button" class="pa-toggle" aria-expanded="false" aria-controls="personalAssistant">
+    <span class="pa-orb" aria-hidden="true">✦</span><span>دستیار هوش مصنوعی</span>
+  </button>
+</aside>
+<script src="./assistant.js?v=1" defer></script>
+</body></html>
