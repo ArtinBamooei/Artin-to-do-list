@@ -20,8 +20,8 @@ function render(item,row){
  priceEl.textContent=fmt(price);if(priceEl.nextElementSibling)priceEl.nextElementSibling.textContent=item.unit;
  const fetched=row.fetchedAt?new Date(row.fetchedAt):null,age=fetched&&Number.isFinite(fetched.getTime())?Date.now()-fetched.getTime():Infinity;
  const stale=Boolean(row.stale)||age<0||age>STALE_AFTER,received=dateLabel(row.fetchedAt);
- timeEl.textContent=(stale?'هشدار: قیمت قدیمی':'منبع: TGJU')+(received?' · دریافت: '+received:'')+(row.sourceDate?' · زمان ثبت در TGJU: '+row.sourceDate:'');
- timeEl.dataset.stale=String(stale);timeEl.title=row.sourceUrl?'منبع قیمت: '+row.sourceUrl:'منبع قیمت: TGJU';
+ timeEl.textContent='';
+ timeEl.dataset.stale=String(stale);timeEl.title=(row.sourceUrl?'منبع قیمت: TGJU':'منبع قیمت: TGJU')+(received?' · آخرین دریافت: '+received:'')+(row.sourceDate?' · تاریخ نرخ در منبع: '+row.sourceDate:'');
  return true;
 }
 async function fetchMarketCurrencies(){
@@ -39,7 +39,7 @@ async function fetchMarketCurrencies(){
   if(gbp){gbp.textContent='—';if(gbp.nextElementSibling)gbp.nextElementSibling.textContent='تومان'}
   if(gbpTime){gbpTime.textContent='در این نسخه از منبع TGJU دریافت نمی‌شود';gbpTime.dataset.stale='true'}
   const status=el('marketStatus');
-  if(status){const checked=dateLabel(data.checkedAt);status.textContent=valid===0?'قیمت‌ها هنوز دریافت نشده‌اند؛ اجرای GitHub Actions را بررسی کنید.':(live?'منبع: TGJU زنده':'منبع: snapshot ذخیره‌شده')+' · داده موجود: '+valid+'/4'+(stale?' · هشدار: '+stale+' قیمت قدیمی':'')+(checked?' · آخرین بررسی: '+checked:'')}
+  if(status){const checked=dateLabel(data.checkedAt);const sourceDate=(items.usd&&items.usd.sourceDate)|| (items.gold&&items.gold.sourceDate);status.textContent=valid===0?'قیمت‌ها هنوز دریافت نشده‌اند؛ اجرای GitHub Actions را بررسی کنید.':(live?'دریافت مستقیم از TGJU':'آخرین دریافت از TGJU')+(checked?' · '+checked:'')+(sourceDate?' · تاریخ نرخ در منبع: '+sourceDate:'')+(stale?' · '+stale+' قیمت قدیمی':'')}
   return {valid,stale,errors:4-valid,checkedAt:data.checkedAt};
  }catch(error){
   for(const item of ITEMS){const time=el(item.timeId);if(time){time.dataset.stale='true';time.textContent='هشدار: دریافت داده ناموفق بود'}}
