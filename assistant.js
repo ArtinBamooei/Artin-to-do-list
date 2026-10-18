@@ -217,8 +217,8 @@
         const alignments = headers.map((_, index) => {
           const divider = dividerCells[index] || "---";
           if (divider.startsWith(":") && divider.endsWith(":")) return "pa-align-center";
-          if (divider.endsWith(":")) return "pa-align-left";
-          if (divider.startsWith(":")) return "pa-align-right";
+          if (divider.startsWith(":")) return "pa-align-left";
+          if (divider.endsWith(":")) return "pa-align-right";
           return "pa-align-default";
         });
         const table = document.createElement("table");
