@@ -30,3 +30,24 @@
 html[data-theme="dark"] #personalAssistant .pa-error{background:#482a27;color:#f0b0a3;border-color:#75443d}
 @media(max-width:480px){#personalAssistant{left:12px;bottom:12px}#personalAssistant .pa-toggle{padding:10px 14px;font-size:12px}#personalAssistant .pa-panel{bottom:57px;width:calc(100vw - 24px);height:min(620px,calc(100dvh - 88px));min-height:320px;border-radius:16px}#personalAssistant .pa-messages{padding:12px}}
 @media(prefers-reduced-motion:reduce){#personalAssistant *{transition:none!important}}
+
+/* Readable, safe Markdown rendering inside assistant replies */
+#personalAssistant .pa-message p{margin:0 0 8px}
+#personalAssistant .pa-message p:last-child{margin-bottom:0}
+#personalAssistant .pa-message h2,#personalAssistant .pa-message h3,#personalAssistant .pa-message h4,#personalAssistant .pa-message h5{margin:2px 0 8px;font-weight:800;line-height:1.6}
+#personalAssistant .pa-message h2{font-size:15px}
+#personalAssistant .pa-message h3{font-size:14px}
+#personalAssistant .pa-message h4,#personalAssistant .pa-message h5{font-size:13px}
+#personalAssistant .pa-message ul,#personalAssistant .pa-message ol{margin:4px 0 9px;padding-right:22px}
+#personalAssistant .pa-message li{padding:1px 0}
+#personalAssistant .pa-message strong{font-weight:800}
+#personalAssistant .pa-message code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:.92em;background:color-mix(in srgb,var(--pa-muted) 12%,var(--pa-card));padding:2px 5px;border-radius:5px;direction:ltr;unicode-bidi:plaintext}
+#personalAssistant .pa-message pre{max-width:100%;overflow-x:auto;white-space:pre;padding:10px;border-radius:9px;background:#17251f;color:#f2f8f3;direction:ltr;text-align:left}
+#personalAssistant .pa-message pre code{background:transparent;color:inherit;padding:0}
+#personalAssistant .pa-table-wrap{max-width:100%;overflow-x:auto;margin:8px 0;border:1px solid var(--pa-line);border-radius:9px;background:var(--pa-card)}
+#personalAssistant .pa-md-table{width:100%;border-collapse:collapse;font-size:11px;line-height:1.7;text-align:right}
+#personalAssistant .pa-md-table th{background:color-mix(in srgb,var(--pa-accent) 11%,var(--pa-card));font-weight:800;white-space:nowrap}
+#personalAssistant .pa-md-table th,#personalAssistant .pa-md-table td{padding:8px 9px;border-bottom:1px solid var(--pa-line);vertical-align:top}
+#personalAssistant .pa-md-table tr:last-child td{border-bottom:0}
+#personalAssistant .pa-md-table td{overflow-wrap:anywhere;min-width:75px}
+#personalAssistant .pa-message .pa-table-wrap{width:100%}
