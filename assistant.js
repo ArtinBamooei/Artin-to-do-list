@@ -1,7 +1,6 @@
 (() => {
   "use strict";
 
-  // Replace this placeholder with your deployed Worker URL ending in /api/chat.
   const API_URL = "https://artin-personal-assistant.artinbamooeizowj.workers.dev/api/chat";
   const root = document.getElementById("personalAssistant");
   if (!root) return;
@@ -17,6 +16,8 @@
   const status = root.querySelector(".pa-status");
   let history = [];
   let busy = false;
+
+  const welcomeMessage = "برای پیام دادن به هوش مصنوعی، ابتدا فیلترشکن را روشن کن.\nسلام! من دستیار هوش مصنوعی این سایت هستم. چه کمکی از من برمی‌آید؟";
 
   function addMessage(role, content, extraClass = "") {
     const item = document.createElement("div");
@@ -47,7 +48,7 @@
     if (busy) return;
     history = [];
     messagesEl.replaceChildren();
-    addMessage("assistant", "سلام! من دستیار هوش مصنوعی این سایت هستم. چه کمکی از من برمی‌آید؟");
+    addMessage("assistant", welcomeMessage);
     status.textContent = "گفت‌وگو پاک شد";
     input.focus();
   });
@@ -58,7 +59,7 @@
     if (!text || busy) return;
 
     if (API_URL.includes("YOUR-SUBDOMAIN")) {
-      addMessage("error", "اتصال هنوز تنظیم نشده است. ابتدا Worker را در Cloudflare مستقر کن و نشانی آن را در assistant.js جایگزین کن.");
+      addMessage("error", "در دسترس نیست");
       return;
     }
 
@@ -75,17 +76,16 @@
         body: JSON.stringify({ messages: history.slice(-10) }),
       });
       let data;
-      try { data = await response.json(); } catch { throw new Error("پاسخ نامعتبر از سرور دریافت شد."); }
-      if (!response.ok) throw new Error(data.error || "درخواست ناموفق بود (" + response.status + ").");
-      if (typeof data.reply !== "string" || !data.reply.trim()) throw new Error("پاسخ خالی دریافت شد.");
+      try { data = await response.json(); } catch { throw new Error("unavailable"); }
+      if (!response.ok) throw new Error("unavailable");
+      if (typeof data.reply !== "string" || !data.reply.trim()) throw new Error("unavailable");
       typing.remove();
       history.push({ role: "assistant", content: data.reply });
       if (history.length > 10) history = history.slice(-10);
       addMessage("assistant", data.reply);
-    } catch (error) {
+    } catch {
       typing.remove();
-      const message = error && error.message ? error.message : "خطای ناشناخته";
-      addMessage("error", message + (message.includes("Failed to fetch") ? " — نشانی Worker و تنظیمات CORS را بررسی کن." : ""));
+      addMessage("error", "در دسترس نیست");
       if (history[history.length - 1]?.role === "user") history.pop();
       input.value = text;
     } finally {
@@ -101,5 +101,5 @@
     }
   });
 
-  addMessage("assistant", "سلام! من دستیار هوش مصنوعی این سایت هستم. می‌توانم به سؤال‌هایت پاسخ بدهم و در برنامه‌ریزی و یادگیری کمکت کنم. برای شروع، چه چیزی در ذهن داری؟");
+  addMessage("assistant", welcomeMessage);
 })();
