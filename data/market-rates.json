@@ -1,6 +1,6 @@
 {
   "source": "TGJU",
-  "checkedAt": "2026-10-18T16:33:21Z",
+  "checkedAt": "2026-10-18T18:51:32Z",
   "scheduleMinutes": 5,
   "successfulItems": [
     "usd",
@@ -11,32 +11,32 @@
   "failedItems": {},
   "items": {
     "usd": {
-      "price": 2621800.0,
-      "fetchedAt": "2026-10-18T16:33:21Z",
-      "sourceDate": "19:03:27",
+      "price": 2628000.0,
+      "fetchedAt": "2026-10-18T18:51:32Z",
+      "sourceDate": "19:59:58",
       "source": "TGJU",
       "sourceUrl": "https://www.tgju.org/profile/price_dollar_rl",
       "unit": "IRR"
     },
     "gold": {
-      "price": 259195000.0,
-      "fetchedAt": "2026-10-18T16:33:21Z",
-      "sourceDate": "19:03:26",
+      "price": 259372000.0,
+      "fetchedAt": "2026-10-18T18:51:32Z",
+      "sourceDate": "19:59:56",
       "source": "TGJU",
       "sourceUrl": "https://www.tgju.org/profile/geram18",
       "unit": "IRR"
     },
     "eur": {
-      "price": 2947600.0,
-      "fetchedAt": "2026-10-18T16:33:21Z",
-      "sourceDate": "19:03:26",
+      "price": 2948300.0,
+      "fetchedAt": "2026-10-18T18:51:32Z",
+      "sourceDate": "19:59:56",
       "source": "TGJU",
       "sourceUrl": "https://www.tgju.org/profile/price_eur",
       "unit": "IRR"
     },
     "oil": {
       "price": 109.86,
-      "fetchedAt": "2026-10-18T16:33:21Z",
+      "fetchedAt": "2026-10-18T18:51:32Z",
       "sourceDate": "25 مهر",
       "source": "TGJU",
       "sourceUrl": "https://www.tgju.org/profile/energy-brent-oil",
