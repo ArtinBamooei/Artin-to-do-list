@@ -54,8 +54,46 @@
     return cells.length > 0 && cells.every(cell => /^:?-{3,}:?$/.test(cell));
   }
 
+  function normalizeHtmlTables(source) {
+    const decodeText = value => value
+      .replace(/<br\\s*\\/?\\s*>/gi, " ")
+      .replace(/<\\/(?:p|div|li|strong|em|span)>/gi, " ")
+      .replace(/<[^>]*>/g, "")
+      .replace(/&nbsp;/gi, " ")
+      .replace(/&amp;/gi, "&")
+      .replace(/&lt;/gi, "<")
+      .replace(/&gt;/gi, ">")
+      .replace(/&quot;/gi, '"')
+      .replace(/&#39;|&apos;/gi, "'");
+    const cellPattern = /<(td|th)\\b[^>]*>([\\s\\S]*?)<\\/\\1\\s*>/gi;
+    const tablePattern = /<table\\b[\\s\\S]*?<\\/table\\s*>/gi;
+    return source.replace(tablePattern, table => {
+      const rows = [];
+      const rowPattern = /<tr\\b[^>]*>([\\s\\S]*?)<\\/tr\\s*>/gi;
+      let rowMatch;
+      while ((rowMatch = rowPattern.exec(table))) {
+        const cells = [];
+        cellPattern.lastIndex = 0;
+        let cellMatch;
+        while ((cellMatch = cellPattern.exec(rowMatch[1]))) cells.push(decodeText(cellMatch[2]).trim());
+        if (cells.length) rows.push(cells);
+      }
+      if (!rows.length) {
+        const cells = [];
+        cellPattern.lastIndex = 0;
+        let cellMatch;
+        while ((cellMatch = cellPattern.exec(table))) cells.push(decodeText(cellMatch[2]).trim());
+        if (cells.length) rows.push(cells);
+      }
+      if (!rows.length) return decodeText(table);
+      const width = Math.max(...rows.map(row => row.length));
+      const line = row => "| " + Array.from({length: width}, (_, index) => (row[index] || "").replace(/\\|/g, "\\\\|")).join(" | ") + " |";
+      return "\\n" + line(rows[0]) + "\\n| " + Array(width).fill("---").join(" | ") + " |\\n" + rows.slice(1).map(line).join("\\n") + "\\n";
+    }).replace(/<\\/?(?:tr|td|th)\\b[^>]*>/gi, " ");
+  }
+
   function renderMessageContent(container, content) {
-    const lines = String(content).replace(/\r\n?/g, "\n").split("\n");
+    const lines = normalizeHtmlTables(String(content)).replace(/\\r\\n?/g, "\\n").split("\\n");
     let i = 0;
     while (i < lines.length) {
       const line = lines[i];
