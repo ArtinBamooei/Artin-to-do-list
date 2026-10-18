@@ -96,7 +96,7 @@
       const prefix = normalized.slice(0, firstCell);
       normalized = prefix + toMarkdown(normalized.slice(firstCell));
     }
-    return normalized.replace(/<\/?(?:tr|td|th)\b[^>]*>/gi, " ");
+    return normalized.replace(/<\/?(?:tr|td|th)\b[^>]*>/gi, " ").replace(/<\s*$/, "");
   }
 
   function appendSafeHtml(parent, source) {
