@@ -2,3 +2,8 @@ name = "artin-market-api"
 main = "worker/market-api.js"
 compatibility_date = "2026-10-17"
 workers_dev = true
+
+[[ratelimits]]
+name = "MARKET_RATE_LIMITER"
+namespace_id = "7319043"
+simple = { limit = 30, period = 60 }
