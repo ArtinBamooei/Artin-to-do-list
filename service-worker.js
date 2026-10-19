@@ -1,5 +1,5 @@
 'use strict';
-const CACHE_NAME = 'daily-planner-shell-v10';
+const CACHE_NAME = 'daily-planner-shell-v11';
 const APP_SHELL = ['./', './index.html', './manifest.webmanifest', './icon.svg'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(APP_SHELL)).then(() => self.skipWaiting()));
@@ -11,10 +11,16 @@ self.addEventListener('fetch', event => {
   const request = event.request;
   if (request.method !== 'GET' || new URL(request.url).origin !== self.location.origin) return;
   if (new URL(request.url).pathname.endsWith('/data/market-rates.json')) {
+    // Normalize away the refresh query string so offline fallback can find the latest cached snapshot.
+    const cacheUrl = new URL(request.url);
+    cacheUrl.search = '';
+    const cacheKey = new Request(cacheUrl.toString(), { method: 'GET' });
     event.respondWith(fetch(request, { cache: 'no-store' }).then(response => {
-      if (response && response.ok) caches.open(CACHE_NAME).then(cache => cache.put(request, response.clone()));
+      if (response && response.ok) {
+        caches.open(CACHE_NAME).then(cache => cache.put(cacheKey, response.clone()));
+      }
       return response;
-    }).catch(async () => (await caches.match(request)) || Response.error()));
+    }).catch(async () => (await caches.match(cacheKey)) || Response.error()));
     return;
   }
   if (request.mode === 'navigate') {
