@@ -15,9 +15,10 @@ self.addEventListener('fetch', event => {
     const cacheUrl = new URL(request.url);
     cacheUrl.search = '';
     const cacheKey = new Request(cacheUrl.toString(), { method: 'GET' });
-    event.respondWith(fetch(request, { cache: 'no-store' }).then(response => {
+    event.respondWith(fetch(request, { cache: 'no-store' }).then(async response => {
       if (response && response.ok) {
-        caches.open(CACHE_NAME).then(cache => cache.put(cacheKey, response.clone()));
+        const cache = await caches.open(CACHE_NAME);
+        await cache.put(cacheKey, response.clone());
       }
       return response;
     }).catch(async () => (await caches.match(cacheKey)) || Response.error()));
