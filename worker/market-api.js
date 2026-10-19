@@ -8,10 +8,10 @@ const ORIGINS = new Set([
   "http://127.0.0.1:8000",
 ]);
 const MARKETS = {
-  usd: { label: "دلار آزاد", slug: "price_dollar_rl", unit: "تومان", oil: false },
-  eur: { label: "یورو", slug: "price_eur", unit: "تومان", oil: false },
-  gold: { label: "طلای ۱۸ عیار", slug: "geram18", unit: "تومان / گرم", oil: false },
-  oil: { label: "نفت برنت", slug: "energy-brent-oil", unit: "دلار / بشکه", oil: true },
+  usd: { label: "دلار آزاد", slug: "price_dollar_rl", unit: "IRR", min: 10000, max: 100000000 },
+  eur: { label: "یورو", slug: "price_eur", unit: "IRR", min: 10000, max: 100000000 },
+  gold: { label: "طلای ۱۸ عیار", slug: "geram18", unit: "IRR", min: 1000000, max: 10000000000 },
+  oil: { label: "نفت برنت", slug: "energy-brent-oil", unit: "USD/barrel", min: 10, max: 300 },
 };
 const now = () => new Date().toISOString();
 function plainText(html) {
@@ -30,17 +30,30 @@ function plainText(html) {
 function latinDigits(s) {
   return s.replace(/[۰-۹٠-٩]/g, d => String("۰۱۲۳۴۵۶۷۸۹٠١٢٣٤٥٦٧٨٩".indexOf(d) % 10));
 }
+function parseNumber(value) {
+  const normalized = latinDigits(String(value || ""))
+    .replace(/[\u00a0\u202f\s]/g, "")
+    .replace(/[,٬،]/g, "")
+    .replace(/٫/g, ".");
+  const match = normalized.match(/[0-9]+(?:\.[0-9]+)?/);
+  if (!match) return null;
+  const parsed = Number(match[0]);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : null;
+}
 function parse(html, market) {
   const text = latinDigits(plainText(html));
-  const m = text.match(/نرخ\s*فعلی\s*:?\s*([0-9][0-9,٬،.]*)/);
-  if (!m) throw new Error("Current quote not found on TGJU page");
-  const price = Number(m[1].replace(/[,٬،]/g, ""));
-  if (!Number.isFinite(price) || price <= 0) throw new Error("Invalid quote");
-  if (market.oil && (price < 10 || price > 300)) throw new Error("Brent quote outside sanity bounds");
-  if (market.slug === "geram18" && (price < 100000 || price > 1000000000)) throw new Error("Gold quote outside sanity bounds");
-  if (["price_dollar_rl", "price_eur"].includes(market.slug) && (price < 1000 || price > 100000000)) throw new Error("FX quote outside sanity bounds");
-  const time = text.match(/زمان\s+ثبت\s+آخرین\s+نرخ\s*([^\n]{1,45})/);
-  return { price: Math.round(price * 100) / 100, sourceDate: time ? time[1].trim().slice(0, 45) : null };
+  let price = null;
+  const matches = text.matchAll(/نرخ\s*فعلی\s*[:：]?\s*([0-9][0-9,٬،٫.]*)/g);
+  for (const match of matches) {
+    const candidate = parseNumber(match[1]);
+    if (candidate !== null && candidate >= market.min && candidate <= market.max) {
+      price = candidate;
+      break;
+    }
+  }
+  if (price === null) throw new Error("No plausible current quote found in the labelled TGJU field");
+  const time = text.match(/زمان\s+ثبت\s+آخرین\s+نرخ\s*[:：]?\s*(\d{1,2}:\d{2}:\d{2}|\d{1,2}\s+[^ ]{2,12})/);
+  return { price: Math.round(price * 10000) / 10000, sourceDate: time ? time[1].trim().slice(0, 45) : null };
 }
 function response(body, status, origin) {
   return new Response(JSON.stringify(body), {
@@ -113,7 +126,7 @@ export default {
         }, signal: AbortSignal.timeout(12000) });
         if (!res.ok) throw new Error("TGJU HTTP " + res.status);
         const quote = parse(await res.text(), market);
-        items[key] = { label: market.label, price: quote.price, unit: market.unit, source: "TGJU", sourceUrl, sourceDate: quote.sourceDate, fetchedAt: checkedAt, stale: false };
+        items[key] = { label: market.label, price: quote.price, unit: market.unit, source: "TGJU", sourceUrl, sourceDate: quote.sourceDate, fetchedAt: now(), stale: false };
       } catch (e) {
         failedItems[key] = String(e && e.message || e).slice(0, 160);
       }
