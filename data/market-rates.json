@@ -1,6 +1,6 @@
 {
   "source": "TGJU",
-  "checkedAt": "2026-10-22T23:16:13Z",
+  "checkedAt": "2026-10-23T01:38:42Z",
   "scheduleMinutes": 5,
   "successfulItems": [
     "usd",
@@ -16,7 +16,7 @@
       "source": "TGJU",
       "sourceUrl": "https://www.tgju.org/profile/price_dollar_rl",
       "sourceDate": "30 مهر",
-      "fetchedAt": "2026-10-22T23:16:12Z",
+      "fetchedAt": "2026-10-23T01:38:41Z",
       "stale": false,
       "label": "دلار آزاد"
     },
@@ -26,7 +26,7 @@
       "source": "TGJU",
       "sourceUrl": "https://www.tgju.org/profile/geram18",
       "sourceDate": "30 مهر",
-      "fetchedAt": "2026-10-22T23:16:12Z",
+      "fetchedAt": "2026-10-23T01:38:41Z",
       "stale": false,
       "label": "طلای ۱۸ عیار"
     },
@@ -36,20 +36,20 @@
       "source": "TGJU",
       "sourceUrl": "https://www.tgju.org/profile/price_eur",
       "sourceDate": "30 مهر",
-      "fetchedAt": "2026-10-22T23:16:12Z",
+      "fetchedAt": "2026-10-23T01:38:41Z",
       "stale": false,
       "label": "یورو"
     },
     "oil": {
-      "price": 111.789,
+      "price": 113.158,
       "unit": "USD/barrel",
       "source": "TGJU",
       "sourceUrl": "https://www.tgju.org/profile/energy-brent-oil",
-      "sourceDate": "01:17:08",
-      "fetchedAt": "2026-10-22T23:16:13Z",
+      "sourceDate": "03:24:51",
+      "fetchedAt": "2026-10-23T01:38:42Z",
       "stale": false,
       "label": "نفت برنت"
     }
   },
-  "lastAttemptAt": "2026-10-22T23:16:11Z"
+  "lastAttemptAt": "2026-10-23T01:38:39Z"
 }
