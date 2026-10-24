@@ -1,14 +1,15 @@
 {
   "source": "TGJU",
-  "checkedAt": "2026-10-24T17:42:53Z",
+  "checkedAt": "2026-10-24T19:51:09Z",
   "scheduleMinutes": 5,
   "successfulItems": [
-    "usd",
     "eur",
-    "gold",
     "oil"
   ],
-  "failedItems": {},
+  "failedItems": {
+    "usd": "HTTPError: 404 Client Error: Not Found for url: https://www.tgju.org/profile/price_dollar_rl",
+    "gold": "HTTPError: 404 Client Error: Not Found for url: https://www.tgju.org/profile/geram18"
+  },
   "items": {
     "usd": {
       "price": 2679950.0,
@@ -17,8 +18,10 @@
       "sourceUrl": "https://www.tgju.org/profile/price_dollar_rl",
       "sourceDate": "19:52:33",
       "fetchedAt": "2026-10-24T17:42:52Z",
-      "stale": false,
-      "label": "دلار آزاد"
+      "stale": true,
+      "label": "دلار آزاد",
+      "lastError": "HTTPError: 404 Client Error: Not Found for url: https://www.tgju.org/profile/price_dollar_rl",
+      "lastAttemptAt": "2026-10-24T19:51:07Z"
     },
     "gold": {
       "price": 260527000.0,
@@ -27,16 +30,18 @@
       "sourceUrl": "https://www.tgju.org/profile/geram18",
       "sourceDate": "19:25:26",
       "fetchedAt": "2026-10-24T17:42:53Z",
-      "stale": false,
-      "label": "طلای ۱۸ عیار"
+      "stale": true,
+      "label": "طلای ۱۸ عیار",
+      "lastError": "HTTPError: 404 Client Error: Not Found for url: https://www.tgju.org/profile/geram18",
+      "lastAttemptAt": "2026-10-24T19:51:07Z"
     },
     "eur": {
-      "price": 3006100.0,
+      "price": 3006500.0,
       "unit": "IRR",
       "source": "TGJU",
       "sourceUrl": "https://www.tgju.org/profile/price_eur",
-      "sourceDate": "19:26:10",
-      "fetchedAt": "2026-10-24T17:42:52Z",
+      "sourceDate": "19:59:59",
+      "fetchedAt": "2026-10-24T19:51:09Z",
       "stale": false,
       "label": "یورو"
     },
@@ -46,10 +51,10 @@
       "source": "TGJU",
       "sourceUrl": "https://www.tgju.org/profile/energy-brent-oil",
       "sourceDate": "06:52:19",
-      "fetchedAt": "2026-10-24T17:42:53Z",
+      "fetchedAt": "2026-10-24T19:51:09Z",
       "stale": false,
       "label": "نفت برنت"
     }
   },
-  "lastAttemptAt": "2026-10-24T17:42:49Z"
+  "lastAttemptAt": "2026-10-24T19:51:07Z"
 }
