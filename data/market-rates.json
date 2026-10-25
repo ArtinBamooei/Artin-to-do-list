@@ -1,50 +1,44 @@
 {
   "source": "TGJU",
-  "checkedAt": "2026-10-25T09:44:32Z",
+  "checkedAt": "2026-10-25T17:34:49Z",
   "scheduleMinutes": 5,
-  "successfulItems": [],
-  "failedItems": {
-    "usd": "ConnectionError: HTTPSConnectionPool(host='www.tgju.org', port=443): Max retries exceeded with url: /profile/price_dollar_rl (Caused by ReadTimeoutError(\"HTTPSConnectionPool(host='",
-    "eur": "ConnectionError: HTTPSConnectionPool(host='www.tgju.org', port=443): Max retries exceeded with url: /profile/price_eur (Caused by ReadTimeoutError(\"HTTPSConnectionPool(host='www.tg",
-    "gold": "HTTPError: 502 Server Error: Bad Gateway for url: https://www.tgju.org/profile/geram18",
-    "oil": "ConnectionError: HTTPSConnectionPool(host='www.tgju.org', port=443): Max retries exceeded with url: /profile/energy-brent-oil (Caused by ReadTimeoutError(\"HTTPSConnectionPool(host="
-  },
+  "successfulItems": [
+    "usd",
+    "eur",
+    "gold",
+    "oil"
+  ],
+  "failedItems": {},
   "items": {
     "usd": {
-      "price": 2675000.0,
+      "price": 2695000.0,
       "unit": "IRR",
       "source": "TGJU",
       "sourceUrl": "https://www.tgju.org/profile/price_dollar_rl",
-      "sourceDate": "11:44:31",
-      "fetchedAt": "2026-10-25T09:44:31Z",
-      "stale": true,
-      "label": "دلار آزاد",
-      "lastError": "ConnectionError: HTTPSConnectionPool(host='www.tgju.org', port=443): Max retries exceeded with url: /profile/price_dollar_rl (Caused by ReadTimeoutError(\"HTTPSConnectionPool(host='",
-      "lastAttemptAt": "2026-10-25T13:58:14Z"
+      "sourceDate": "19:28:19",
+      "fetchedAt": "2026-10-25T17:34:48Z",
+      "stale": false,
+      "label": "دلار آزاد"
     },
     "gold": {
-      "price": 259012000.0,
+      "price": 259830000.0,
       "unit": "IRR",
       "source": "TGJU",
       "sourceUrl": "https://www.tgju.org/profile/geram18",
-      "sourceDate": "11:44:31",
-      "fetchedAt": "2026-10-25T09:44:32Z",
-      "stale": true,
-      "label": "طلای ۱۸ عیار",
-      "lastError": "HTTPError: 502 Server Error: Bad Gateway for url: https://www.tgju.org/profile/geram18",
-      "lastAttemptAt": "2026-10-25T13:58:14Z"
+      "sourceDate": "19:28:11",
+      "fetchedAt": "2026-10-25T17:34:48Z",
+      "stale": false,
+      "label": "طلای ۱۸ عیار"
     },
     "eur": {
-      "price": 3000500.0,
+      "price": 3025400.0,
       "unit": "IRR",
       "source": "TGJU",
       "sourceUrl": "https://www.tgju.org/profile/price_eur",
-      "sourceDate": "11:44:31",
-      "fetchedAt": "2026-10-25T09:44:32Z",
-      "stale": true,
-      "label": "یورو",
-      "lastError": "ConnectionError: HTTPSConnectionPool(host='www.tgju.org', port=443): Max retries exceeded with url: /profile/price_eur (Caused by ReadTimeoutError(\"HTTPSConnectionPool(host='www.tg",
-      "lastAttemptAt": "2026-10-25T13:58:14Z"
+      "sourceDate": "19:28:22",
+      "fetchedAt": "2026-10-25T17:34:48Z",
+      "stale": false,
+      "label": "یورو"
     },
     "oil": {
       "price": 116.72,
@@ -52,12 +46,10 @@
       "source": "TGJU",
       "sourceUrl": "https://www.tgju.org/profile/energy-brent-oil",
       "sourceDate": "2 آبان",
-      "fetchedAt": "2026-10-25T09:44:32Z",
-      "stale": true,
-      "label": "نفت برنت",
-      "lastError": "ConnectionError: HTTPSConnectionPool(host='www.tgju.org', port=443): Max retries exceeded with url: /profile/energy-brent-oil (Caused by ReadTimeoutError(\"HTTPSConnectionPool(host=",
-      "lastAttemptAt": "2026-10-25T13:58:14Z"
+      "fetchedAt": "2026-10-25T17:34:49Z",
+      "stale": false,
+      "label": "نفت برنت"
     }
   },
-  "lastAttemptAt": "2026-10-25T13:58:14Z"
+  "lastAttemptAt": "2026-10-25T17:34:47Z"
 }
